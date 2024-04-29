@@ -22,7 +22,9 @@ public class ProcessFormServlet extends HttpServlet {
         Pessoa pessoa = new Pessoa(nome, sobrenome, idade, telefone);
 
         // Imprima o objeto Pessoa no terminal
-        System.out.println(pessoa);
+        System.out.println(pessoa.toJson());
+
+        response.setStatus(HttpServletResponse.SC_OK); //Envia status ok para a criação do usuário.
 
         // Retorne um JSON com os dados da Pessoa
         response.setContentType("application/json");

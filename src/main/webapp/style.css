@@ -1,0 +1,39 @@
+body {
+    background-color: #f0f0f0;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    margin: 0;
+    font-family: 'Comic Sans MS', cursive, sans-serif;
+}
+
+#cadastroForm {
+    background-color: #fff;
+    padding: 20px;
+    border-radius: 5px;
+    box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1);
+    width: 300px;
+}
+
+#cadastroForm h1 {
+    text-align: center;
+}
+
+#cadastroForm input[type="text"] {
+    width: 100%;
+    border-radius: 5px; 
+}
+
+#cadastroForm input[type="submit"] {
+    background-color: blue;
+    color: white; 
+    border: none;
+    border-radius: 5px; 
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+}
+
+#cadastroForm input[type="submit"]:hover {
+    background-color: darkblue;
+}
