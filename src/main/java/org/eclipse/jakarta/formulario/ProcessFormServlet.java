@@ -5,6 +5,12 @@ import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.*;
 import jakarta.ws.rs.POST;
 
+import org.apache.pdfbox.pdmodel.PDDocument;
+import org.apache.pdfbox.pdmodel.PDPage;
+import org.apache.pdfbox.pdmodel.PDPageContentStream;
+import org.apache.pdfbox.pdmodel.font.PDType1Font;
+import org.apache.pdfbox.pdmodel.font.Standard14Fonts;
+
 import java.io.*;
 
 @WebServlet("/cadastrar")
@@ -12,7 +18,7 @@ public class ProcessFormServlet extends HttpServlet {
 
     @POST
     public void doPost(HttpServletRequest request, HttpServletResponse response)
-    throws ServletException, IOException {
+            throws ServletException, IOException {
         String nome = request.getParameter("nome");
         String sobrenome = request.getParameter("sobrenome");
         String idade = request.getParameter("idade");
@@ -21,15 +27,39 @@ public class ProcessFormServlet extends HttpServlet {
         // Crie um objeto Pessoa
         Pessoa pessoa = new Pessoa(nome, sobrenome, idade, telefone);
 
-        // Imprima o objeto Pessoa no terminal
-        System.out.println(pessoa.toJson());
+        // Crie um documento PDF
+        PDDocument document = new PDDocument();
+        PDPage page = new PDPage();
+        document.addPage(page);
 
-        response.setStatus(HttpServletResponse.SC_OK); //Envia status ok para a criação do usuário.
+        // Adicione o conteúdo JSON à página
+        PDPageContentStream contentStream = new PDPageContentStream(document, page);
+        contentStream.setFont(new PDType1Font(Standard14Fonts.FontName.HELVETICA_BOLD), 15);
 
-        // Retorne um JSON com os dados da Pessoa
-        response.setContentType("application/json");
-        PrintWriter out = response.getWriter();
-        out.println(pessoa.toJson());
+        // Codifique o texto em UTF-8
+        String jsonText = pessoa.toJson();
+        byte[] utf8Bytes = jsonText.getBytes("UTF-8");
+
+        // Adicione o texto com caracteres especiais
+        contentStream.beginText();
+        contentStream.newLineAtOffset(50, 700); // Posição X e Y
+        contentStream.showText(new String(utf8Bytes, "UTF-8"));
+        contentStream.endText();
+        contentStream.close();
+
+        // Salve o documento como um arquivo PDF
+        ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
+        document.save(byteArrayOutputStream);
+        document.close();
+
+        // Defina o cabeçalho de resposta para download
+        response.setContentType("application/pdf");
+        response.setHeader("Content-Disposition", "attachment; filename=pessoa.pdf");
+
+        // Escreva o conteúdo do PDF na resposta
+        OutputStream outputStream = response.getOutputStream();
+        byteArrayOutputStream.writeTo(outputStream);
+        outputStream.flush();
+        outputStream.close();
     }
 }
-
